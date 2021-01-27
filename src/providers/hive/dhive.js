@@ -454,7 +454,7 @@ export const getActiveVotes = (author, permlink) =>
     }
   });
 
-export const getRankedPosts = async (query, currentUserName, filterNsfw) => {
+export const getRankedPosts = async (query, currentUserName, filterNsfw, filterRecommended) => {
   try {
     let posts = await client.call('bridge', 'get_ranked_posts', query);
 
@@ -472,17 +472,22 @@ export const getRankedPosts = async (query, currentUserName, filterNsfw) => {
   }
 };
 
-export const getRecommendedPosts = async (query, currentUserName, filterRecommended) => {
+export const getRecommendedPosts = async (query, currentUserName, filterNsfw, filterRecommend) => {
   try {
     let posts = await client.call('bridge', 'get_ranked_posts', query);
 
     if (posts) {
       posts = parsePosts(posts, currentUserName);
+      let updatedPosts = posts;
 
-      if (filterRecommended !== '0') {
-        const updatedPosts = filterRecommendedPost(posts, filterRecommended);
-        return updatedPosts;
+      if (filterRecommend.length !== 0) {
+        updatedPosts = filterRecommendedPost(updatedPosts, filterRecommend);
       }
+      if (filterNsfw !== '0') {
+        updatedPosts = filterNsfwPost(updatedPosts, filterNsfw);
+      }
+
+      return updatedPosts;
     }
     return posts;
   } catch (error) {
@@ -490,7 +495,7 @@ export const getRecommendedPosts = async (query, currentUserName, filterRecommen
   }
 };
 
-export const getAccountPosts = async (query, currentUserName, filterNsfw) => {
+export const getAccountPosts = async (query, currentUserName, filterNsfw, filterRecommended) => {
   try {
     let posts = await client.call('bridge', 'get_account_posts', query);
 

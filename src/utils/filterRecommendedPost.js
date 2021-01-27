@@ -3,7 +3,15 @@ import get from 'lodash/get';
 export default (posts, recommendedUser) => {
   const updatedPosts = [];
 
-  //TODO: Filter Algorythm
+  if (recommendedUser !== 0) {
+    recommendedUser.forEach((user) => {
+      posts.forEach((post) => {
+        if (get(post, 'author') === get(user, 'name')) {
+          updatedPosts.push(post);
+        }
+      });
+    });
+  }
 
   return updatedPosts;
 };

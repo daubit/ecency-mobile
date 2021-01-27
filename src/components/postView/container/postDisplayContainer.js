@@ -149,7 +149,7 @@ const mapStateToProps = (state) => ({
   currentAccount: state.account.currentAccount,
   pinCode: state.application.pin,
   isLoggedIn: state.application.isLoggedIn,
-  recommendedUser: state.application.recommendedUser,
+  recommendedUser: state.recommended.recommendedUser,
 });
 
 export default withNavigation(connect(mapStateToProps)(injectIntl(PostDisplayContainer)));

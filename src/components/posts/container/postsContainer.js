@@ -47,7 +47,7 @@ const PostsContainer = ({
   const dispatch = useDispatch();
   const intl = useIntl();
 
-  const recommendedUser = useSelector((state) => state.application.recommendedUser);
+  const recommendedUser = useSelector((state) => state.recommended.recommendedUser);
   const nsfw = useSelector((state) => state.application.nsfw);
   const feedPosts = useSelector((state) => state.posts.feedPosts);
   const isConnected = useSelector((state) => state.application.isConnected);
@@ -307,7 +307,7 @@ const PostsContainer = ({
       options.start_author = startAuthor;
       options.start_permlink = startPermlink;
     }
-    func(options, username, nsfw)
+    func(options, username, nsfw, recommendedUser)
       .then((result) => {
         if (isMountedRef.current) {
           if (result.length > 0) {
