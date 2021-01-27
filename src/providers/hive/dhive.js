@@ -20,6 +20,7 @@ import { getReputation } from '../../utils/reputation';
 import parseToken from '../../utils/parseToken';
 import parseAsset from '../../utils/parseAsset';
 import filterNsfwPost from '../../utils/filterNsfwPost';
+import filterRecommendedPost from '../../utils/filterRecommendedPost';
 import { jsonStringify } from '../../utils/jsonUtils';
 import { getDsteemDateErrorMessage } from '../../utils/dsteemUtils';
 
@@ -462,6 +463,24 @@ export const getRankedPosts = async (query, currentUserName, filterNsfw) => {
 
       if (filterNsfw !== '0') {
         const updatedPosts = filterNsfwPost(posts, filterNsfw);
+        return updatedPosts;
+      }
+    }
+    return posts;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getRecommendedPosts = async (query, currentUserName, filterRecommended) => {
+  try {
+    let posts = await client.call('bridge', 'get_ranked_posts', query);
+
+    if (posts) {
+      posts = parsePosts(posts, currentUserName);
+
+      if (filterRecommended !== '0') {
+        const updatedPosts = filterRecommendedPost(posts, filterRecommended);
         return updatedPosts;
       }
     }

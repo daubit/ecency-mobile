@@ -11,6 +11,7 @@ import {
   getPost,
   getRankedPosts,
   getCommunity,
+  getRecommendedPosts,
 } from '../../../providers/hive/dhive';
 import { getPromotePosts } from '../../../providers/ecency/ecency';
 
@@ -46,6 +47,7 @@ const PostsContainer = ({
   const dispatch = useDispatch();
   const intl = useIntl();
 
+  const recommendedUser = useSelector((state) => state.application.recommendedUser);
   const nsfw = useSelector((state) => state.application.nsfw);
   const feedPosts = useSelector((state) => state.posts.feedPosts);
   const isConnected = useSelector((state) => state.application.isConnected);
@@ -267,6 +269,13 @@ const PostsContainer = ({
     ) {
       if (filter === 'feed' && subfilter === 'communities') {
         func = getRankedPosts;
+        options = {
+          observer: feedUsername,
+          sort: 'created',
+          tag: 'my',
+        };
+      } else if (filter === 'feed' && subfilter === 'for you') {
+        func = getRecommendedPosts;
         options = {
           observer: feedUsername,
           sort: 'created',
