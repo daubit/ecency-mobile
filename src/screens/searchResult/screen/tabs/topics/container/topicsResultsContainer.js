@@ -15,16 +15,33 @@ const OtherResultContainer = (props) => {
   const { children, navigation, searchValue } = props;
 
   useEffect(() => {
-    if (searchValue.length <= 10) {
+    if (searchValue && searchValue.length <= 10) {
       setNoResult(false);
       setTags([]);
 
-      searchTag(searchValue.trim(), 20).then((res) => {
-        if (res.length === 0) {
+      searchTag(searchValue.trim(), 20)
+        .then((res) => {
+          if (res && res.length === 0) {
+            setNoResult(true);
+          }
+          setTags(res);
+        })
+        .catch((err) => {
           setNoResult(true);
-        }
-        setTags(res);
-      });
+          setTags([]);
+        });
+    } else {
+      searchTag(searchValue.trim(), 20, 1)
+        .then((res) => {
+          if (res && res.length === 0) {
+            setNoResult(true);
+          }
+          setTags(res);
+        })
+        .catch((err) => {
+          setNoResult(true);
+          setTags([]);
+        });
     }
   }, [searchValue]);
 

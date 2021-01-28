@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView, FlatList, View, Text, TouchableOpacity } from 'react-native';
 import get from 'lodash/get';
 import isUndefined from 'lodash/isUndefined';
-import FastImage from 'react-native-fast-image';
-import { useIntl } from 'react-intl';
+import Highlighter from 'react-native-highlight-words';
 
 // Components
 import { PostHeaderDescription, FilterBar } from '../../../../../../components';
@@ -15,19 +14,17 @@ import {
 import PostsResultsContainer from '../container/postsResultsContainer';
 
 import { getTimeFromNow } from '../../../../../../utils/time';
-
 import styles from './postsResultsStyles';
-
-import DEFAULT_IMAGE from '../../../../../../assets/no_image.png';
 
 const filterOptions = ['relevance', 'popularity', 'newest'];
 
 const PostsResults = ({ navigation, searchValue }) => {
-  const intl = useIntl();
-
   const _renderItem = (item, index) => {
     const reputation =
       get(item, 'author_rep', undefined) || get(item, 'author_reputation', undefined);
+    //console.log(item);
+    const votes = get(item, 'up_votes', 0) || get(item, 'stats.total_votes', 0);
+    const body = get(item, 'summary', '') || get(item, 'body_marked', '');
 
     return (
       <View style={[styles.itemWrapper, index % 2 !== 0 && styles.itemWrapperGray]}>
@@ -36,15 +33,18 @@ const PostsResults = ({ navigation, searchValue }) => {
           name={get(item, 'author')}
           reputation={Math.floor(reputation)}
           size={36}
-          tag={item.category}
+          content={item}
         />
-        <FastImage source={item.img_url} style={styles.thumbnail} defaultSource={DEFAULT_IMAGE} />
         <View style={[styles.postDescription]}>
           <Text style={styles.title}>{item.title}</Text>
-          {!!item.body && (
-            <Text style={styles.summary} numberOfLines={2}>
-              {item.body}
-            </Text>
+          {!!body && (
+            <Highlighter
+              highlightStyle={{ backgroundColor: 'yellow' }}
+              searchWords={[searchValue]}
+              textToHighlight={body.replace(/<mark>/g, '').replace(/<\/mark>/g, '')}
+              style={styles.summary}
+              numberOfLines={3}
+            />
           )}
         </View>
         <View style={styles.stats}>
@@ -56,7 +56,7 @@ const PostsResults = ({ navigation, searchValue }) => {
             textStyle={styles.postIconText}
             iconStyle={styles.postIcon}
             iconType="MaterialCommunityIcons"
-            text={get(item, 'up_votes', 0)}
+            text={votes}
           />
           <TextWithIcon
             iconName="comment-outline"
